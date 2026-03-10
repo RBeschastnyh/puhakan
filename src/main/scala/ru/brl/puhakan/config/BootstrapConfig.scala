@@ -19,11 +19,8 @@ class BootstrapConfig(private val configFile: URI) {
     val rootNode: ConfNode = Using(Source.fromURI(configFile)) { reader =>
       val iter: BufferedIterator[String] = reader.getLines().filter(!_.isBlank).iterator.buffered
 
-      @tailrec
       def buildTree(confNode: ConfNode): ConfNode = {
-        if (!iter.hasNext) {
-          confNode
-        } else {
+        if (iter.hasNext) {
           val currentLine: String = iter.next()
 
           val colonIndex: Int = currentLine.indexOf(':')
@@ -40,17 +37,15 @@ class BootstrapConfig(private val configFile: URI) {
 
           val node: ConfNode = ConfNode(paramName.trim, value, nextNode)
 
-          confNode._3 match {
-            case Some(ls) => ls += node
-            case None =>
-          }
-
           node._3 match {
             case Some(_) => buildTree(node)
-            case None => buildTree(confNode)
+            case None =>
+              confNode._3.get += node
+              buildTree(confNode)
           }
         }
 
+        confNode
       }
 
       buildTree(ConfNode())
@@ -60,6 +55,8 @@ class BootstrapConfig(private val configFile: URI) {
         throw RuntimeException(ex)
       case Right(va) => va
     }
+
+    val a = 0
   }
 
   private def compareWhiteSpaces(cur: String, next: String): Int = {
