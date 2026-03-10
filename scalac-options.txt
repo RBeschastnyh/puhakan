@@ -1,5 +1,6 @@
 -d
 target/classes
 src/main/scala/ru/brl/puhakan/config/BootstrapConfig.scala
+src/main/scala/ru/brl/puhakan/config/ConfNode.scala
 src/main/scala/ru/brl/puhakan/util/BuildConstants.scala
 src/main/scala/ru/brl/puhakan/Main.scala
