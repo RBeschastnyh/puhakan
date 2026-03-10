@@ -6,4 +6,7 @@ package config
  * @author Roman Beschastnykh
  * @since 0.0.0
  */
-case class ConfNode(private val name: String = null.asInstanceOf[String], private val value: Array[ConfNode] = Array())
+case class ConfNode(private val name: String = null.asInstanceOf[String],
+                    private val value: Any,                   
+                    private val children: Array[ConfNode] = Array()) {
+}

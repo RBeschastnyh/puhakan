@@ -18,8 +18,8 @@ class BootstrapConfig(private val configFile: URI) {
   private def loadConfig(): Unit = {
     val rootNode: ConfNode = ConfNode()
     Using(Source.fromURI(configFile)) { reader =>
-      val iter: Iterator[String] = reader.getLines().iterator
-      val configRootNode: ConfNode = buildTree(ConfNode(), iter)
+      val iter: Iterator[String] = reader.getLines().filter(!_.isBlank).iterator
+      val configRootNode: ConfNode = buildTree(ConfNode(), iter, 0)
     }.toEither match {
       case Left(ex) =>
         println("Comprehensive logging needed. Exception occured")
@@ -29,8 +29,9 @@ class BootstrapConfig(private val configFile: URI) {
   }
 
   @tailrec
-  private def buildTree(confNode: ConfNode, iterator: Iterator[String]): ConfNode = {
+  private def buildTree(confNode: ConfNode, iterator: Iterator[String], previousPad: Int): ConfNode = {
     val currentLine: String = iterator.next()
+    
     val colonIndex: Int = currentLine.indexOf(':')
     require(colonIndex > -1, s"Invalid line $currentLine")
 
@@ -39,10 +40,17 @@ class BootstrapConfig(private val configFile: URI) {
     require(paramName != null, s"Invalid line: $currentLine")
 
     if (!iterator.hasNext) {
-      ConfNode(paramName.trim, Array())
+      require(!paramValue.isBlank, s"Invalid line: $currentLine")
+      ConfNode(paramName.trim, paramValue, Array())
     } else {
-      confNode._2
-      buildTree()
+      if (!paramValue.isBlank) {
+        ConfNode(paramName, Array(paramValue.tail.trim))
+        confNode.append()
+      } else {
+        val newNode: ConfNode = ConfNode(paramName, Array())
+        
+      }
+//      buildTree()
     }
 
   }
