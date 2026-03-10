@@ -15,5 +15,6 @@ object Main {
     val fileConf: BootstrapConfig = new BootstrapConfig(
       currentDirectoryPath.toUri.resolve(BuildConstants.CONFIG_FILE_NAME)
     )
+    
   }
 }
